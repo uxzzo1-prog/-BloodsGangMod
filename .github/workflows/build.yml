@@ -15,13 +15,23 @@ jobs:
           ndk-version: r23b
           add-to-path: true
 
+      - name: Download AML Headers
+        run: |
+          git clone --depth=1 https://github.com/rusjj/AML-SDK.git aml_sdk
+          mkdir -p jni
+          cp main.cpp Android.mk jni/
+          echo "APP_ABI := armeabi-v7a" > jni/Application.mk
+          echo "APP_PLATFORM := android-21" >> jni/Application.mk
+          echo "LOCAL_C_INCLUDES += \$(LOCAL_PATH)/../aml_sdk/include" >> jni/Android.mk
+
       - name: Build Shared Library (.so)
         run: |
-          ndk-build
+          ndk-build -C jni
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: libBloodsGang.so
           path: libs/armeabi-v7a/libBloodsGang.so
+          
           
